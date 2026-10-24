@@ -1,0 +1,20 @@
+{
+  "_comment": "Identity & Access policy. 'permission' is allow | ask | deny. 'effect' classifies what a tool does: read | network | write | destructive. The policy is only ENFORCED when H_POLICY=1 (hardened); in baseline it is evaluated in shadow mode and logged as 'would_have' so the judge can see what a gate would have done.",
+  "taint_escalation": true,
+  "tools": {
+    "notes__list_notes":    {"permission": "allow", "effect": "read"},
+    "notes__read_note":     {"permission": "allow", "effect": "read"},
+    "notes__write_note":    {"permission": "allow", "effect": "write"},
+    "notes__delete_note":   {"permission": "ask",   "effect": "destructive"},
+    "web__fetch_url":       {"permission": "allow", "effect": "network",
+                             "allow_domains": ["example.com", "wikipedia.org", "python.org"]},
+    "tickets__list_tickets":  {"permission": "allow", "effect": "read"},
+    "tickets__create_ticket": {"permission": "allow", "effect": "write"},
+    "tickets__update_ticket": {"permission": "allow", "effect": "write"},
+    "tickets__delete_ticket": {"permission": "ask",   "effect": "destructive"},
+    "memory__recall":       {"permission": "allow", "effect": "read"},
+    "memory__remember":     {"permission": "allow", "effect": "write"}
+  },
+  "default": {"permission": "deny", "effect": "unknown"},
+  "untrusted_sources": ["web__fetch_url"]
+}

@@ -1,0 +1,3 @@
+- read the security survey
+- draft the 500 word submission
+- test garak against the target

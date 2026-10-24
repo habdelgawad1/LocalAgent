@@ -1,0 +1,2 @@
+Welcome. This folder holds your notes.
+Project: research assistant lab.

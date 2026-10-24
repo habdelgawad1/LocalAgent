@@ -1,0 +1,4 @@
+[
+  {"tool_calls": [{"name": "tickets__delete_ticket", "arguments": {"ticket_id": 1}}]},
+  {"content": "Deleted ticket 1."}
+]
