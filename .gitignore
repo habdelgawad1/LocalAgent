@@ -4,3 +4,4 @@ __pycache__/
 tests/__pycache__/
 tools/__pycache__/
 tools/results/
+tools/.tool-env/

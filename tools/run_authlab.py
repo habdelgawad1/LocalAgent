@@ -7,17 +7,13 @@ the intended reference target, or provide another HTTP/OAuth MCP endpoint.
 import argparse
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
-
-def _tool(name):
-    found = shutil.which(name)
-    if found:
-        return found
-    candidate = Path(sys.executable).with_name(name + (".exe" if sys.platform == "win32" else ""))
-    return str(candidate) if candidate.exists() else None
+try:
+    from .runner_common import find_tool
+except ImportError:
+    from runner_common import find_tool
 
 
 def main() -> int:
@@ -28,7 +24,7 @@ def main() -> int:
     parser.add_argument("--foreign-token")
     parser.add_argument("--fail-under")
     args = parser.parse_args()
-    executable = _tool("mcp-authlab")
+    executable = find_tool("mcp-authlab")
     if executable is None:
         print("mcp-authlab is not installed or not on PATH", file=sys.stderr)
         return 2

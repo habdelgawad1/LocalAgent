@@ -14,6 +14,7 @@ workflows, adapters, configurations, and their shared results all live here.
 | `run_a2a_scan.py` | Optional A2A scanner placeholder | `a2a_scanner/` |
 | `run_all.py` | Orchestrate available scanners and adapters | `findings_tools.json` |
 | `adapters.py` | Normalize saved JSON into finding records | consumed by `run_all.py` |
+| `runner_common.py` | Shared executable discovery | used by scanner runners |
 
 Gateway workflows:
 
@@ -36,6 +37,19 @@ python tools/export_mcp_config.py --run-dir logs/<run>
 tools\run.cmd start_gateway
 tools\run.cmd run_garak
 ```
+
+The repository venv is used automatically when present. Optional workflows can use another
+environment without editing scripts:
+
+```powershell
+$env:TOOL_PYTHON = "C:\path\to\python.exe"       # garak, promptfoo, and memrun helper
+$env:PYRIT_PYTHON = "C:\path\to\pyrit\Scripts\python.exe"
+$env:MEMRUN_ROOT = "C:\path\to\memrun"
+$env:MCP_SCANNER = "C:\path\to\mcp-scanner.exe"
+```
+
+Only set the variables needed by the workflow you are running. The scripts fail with a clear
+message when an optional dependency is missing.
 
 The scanners are installed in a separate virtual environment and are never imported by this
 package. `mcp-scan inspect` is local-only; `mcp-scan scan` requires `--allow-remote`.

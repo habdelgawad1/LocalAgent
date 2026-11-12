@@ -3,15 +3,12 @@
 #   .\tools\run_cisco.ps1 -Llm     also the LLM analyzer (Ollama running)
 param([switch]$Llm, [switch]$Control, [string]$Model = "openai/qwen2.5:7b-instruct")
 $ErrorActionPreference = "Continue"
-Set-Location "$PSScriptRoot\.."            # always run from the LocalAgent repo root
-$py     = "C:\Users\nerme\AppData\Local\Python\pythoncore-3.14-64\python.exe"        # system Python 3.14 (has garak)
-$venv   = Join-Path (Get-Location) ".venv\Scripts\python.exe"                         # repo venv (has mcp, openai)
-$pyrit  = "C:\Users\nerme\Desktop\Coventry\GRAD\DVAI\pyrit-env\Scripts\python.exe"    # PyRIT environment
-$memrun = "C:\Users\nerme\Desktop\Coventry\GRAD\Gemini"                               # folder with memrun go.mod
+. (Join-Path $PSScriptRoot "tool_env.ps1")
 
-& $venv tools\export_tools.py
+& $RepoPython tools\export_tools.py
 if ($LASTEXITCODE -ne 0) { exit 1 }
-$scanner = "C:\Users\nerme\.local\bin\mcp-scanner.exe"
+if (-not $McpScanner) { throw "Cisco MCP scanner was not found. Set MCP_SCANNER or add mcp-scanner to PATH." }
+$scanner = $McpScanner
 $analyzers = "yara"
 if ($Llm) {
   $env:MCP_SCANNER_LLM_API_KEY = "ollama"

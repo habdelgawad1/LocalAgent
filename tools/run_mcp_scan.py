@@ -2,23 +2,13 @@
 import argparse
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
-
-def _tool(name):
-    names = ["snyk-agent-scan", "mcp-scan"] if name == "mcp-scan" else [name]
-    for candidate_name in names:
-        found = shutil.which(candidate_name)
-        if found:
-            return found
-        candidate = Path(sys.executable).with_name(
-            candidate_name + (".exe" if sys.platform == "win32" else "")
-        )
-        if candidate.exists():
-            return str(candidate)
-    return None
+try:
+    from .runner_common import find_tool
+except ImportError:
+    from runner_common import find_tool
 
 
 def main() -> int:
@@ -29,7 +19,7 @@ def main() -> int:
     parser.add_argument("--allow-remote", action="store_true")
     parser.add_argument("--dangerously-run-mcp-servers", action="store_true")
     args = parser.parse_args()
-    executable = _tool("mcp-scan")
+    executable = find_tool("snyk-agent-scan", aliases=("mcp-scan",))
     if executable is None:
         print("mcp-scan is not installed or not on PATH", file=sys.stderr)
         return 2

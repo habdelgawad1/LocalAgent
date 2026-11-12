@@ -2,24 +2,20 @@
 import argparse
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
-
-def _tool(name):
-    found = shutil.which(name)
-    if found:
-        return found
-    candidate = Path(sys.executable).with_name(name + (".exe" if sys.platform == "win32" else ""))
-    return str(candidate) if candidate.exists() else None
+try:
+    from .runner_common import find_tool
+except ImportError:
+    from runner_common import find_tool
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run_dir", nargs="?", default="logs/_scan", type=Path)
     args = parser.parse_args()
-    executable = _tool("pip-audit")
+    executable = find_tool("pip-audit")
     if executable is None:
         print("pip-audit is not installed or not on PATH", file=sys.stderr)
         return 2

@@ -2,30 +2,18 @@
 import argparse
 import json
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 
 try:
+    from .runner_common import find_tool
     from .adapters import a2a_scanner, mcp_authlab, mcp_scan, pip_audit
 except ImportError:
+    from runner_common import find_tool
     from adapters import a2a_scanner, mcp_authlab, mcp_scan, pip_audit
 
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS = Path(__file__).resolve().parent
-
-
-def _tool_available(name):
-    names = ["snyk-agent-scan", "mcp-scan"] if name == "mcp-scan" else [name]
-    for candidate_name in names:
-        if shutil.which(candidate_name):
-            return True
-        candidate = Path(sys.executable).with_name(
-            candidate_name + (".exe" if sys.platform == "win32" else "")
-        )
-        if candidate.exists():
-            return True
-    return False
 
 
 def _export_config(run_dir: Path, config_path: Path) -> bool:
@@ -41,7 +29,9 @@ def _export_config(run_dir: Path, config_path: Path) -> bool:
 
 
 def _run(label, command, executable, output_paths, adapter):
-    if not _tool_available(executable):
+    lookup_name = "snyk-agent-scan" if executable == "mcp-scan" else executable
+    aliases = ("mcp-scan",) if executable == "mcp-scan" else ()
+    if not find_tool(lookup_name, aliases=aliases):
         print(f"{label}: skipped: {executable} not on PATH")
         return "skipped", []
     result = subprocess.run(command, cwd=ROOT, check=False)
