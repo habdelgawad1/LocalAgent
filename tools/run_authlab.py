@@ -12,6 +12,14 @@ import subprocess
 import sys
 
 
+def _tool(name):
+    found = shutil.which(name)
+    if found:
+        return found
+    candidate = Path(sys.executable).with_name(name + (".exe" if sys.platform == "win32" else ""))
+    return str(candidate) if candidate.exists() else None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run_dir", type=Path)
@@ -20,13 +28,14 @@ def main() -> int:
     parser.add_argument("--foreign-token")
     parser.add_argument("--fail-under")
     args = parser.parse_args()
-    if shutil.which("mcp-authlab") is None:
+    executable = _tool("mcp-authlab")
+    if executable is None:
         print("mcp-authlab is not installed or not on PATH", file=sys.stderr)
         return 2
     out_dir = args.run_dir / "mcp_authlab"
     out_dir.mkdir(parents=True, exist_ok=True)
     output = out_dir / "scan.json"
-    command = ["mcp-authlab", "scan", args.url, "--format", "json", "-o", str(output)]
+    command = [executable, "scan", args.url, "--format", "json", "-o", str(output)]
     for flag, value in (("--token", args.token), ("--foreign-token", args.foreign_token),
                         ("--fail-under", args.fail_under)):
         if value is not None:
@@ -34,7 +43,7 @@ def main() -> int:
     result = subprocess.run(command, check=False)
     try:
         version = subprocess.run(
-            ["mcp-authlab", "--version"], check=True, capture_output=True, text=True
+            [executable, "--version"], check=True, capture_output=True, text=True
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         version = "unknown"

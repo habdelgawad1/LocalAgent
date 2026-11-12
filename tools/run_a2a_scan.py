@@ -12,6 +12,14 @@ import subprocess
 import sys
 
 
+def _tool(name):
+    found = shutil.which(name)
+    if found:
+        return found
+    candidate = Path(sys.executable).with_name(name + (".exe" if sys.platform == "win32" else ""))
+    return str(candidate) if candidate.exists() else None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run_dir", type=Path)
@@ -21,7 +29,7 @@ def main() -> int:
     args = parser.parse_args()
     out_dir = args.run_dir / "a2a_scanner"
     out_dir.mkdir(parents=True, exist_ok=True)
-    executable = shutil.which("a2a-scanner")
+    executable = _tool("a2a-scanner")
     if executable is None:
         print("a2a-scanner is unavailable; TODO: install cisco-ai-a2a-scanner and verify its CLI", file=sys.stderr)
         return 2

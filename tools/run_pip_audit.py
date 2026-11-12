@@ -7,23 +7,32 @@ import subprocess
 import sys
 
 
+def _tool(name):
+    found = shutil.which(name)
+    if found:
+        return found
+    candidate = Path(sys.executable).with_name(name + (".exe" if sys.platform == "win32" else ""))
+    return str(candidate) if candidate.exists() else None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run_dir", nargs="?", default="logs/_scan", type=Path)
     args = parser.parse_args()
-    if shutil.which("pip-audit") is None:
+    executable = _tool("pip-audit")
+    if executable is None:
         print("pip-audit is not installed or not on PATH", file=sys.stderr)
         return 2
     out_dir = args.run_dir / "pip_audit"
     out_dir.mkdir(parents=True, exist_ok=True)
     output = out_dir / "pip_audit.json"
     result = subprocess.run(
-        ["pip-audit", "-r", "requirements.lock", "-f", "json", "-o", str(output)],
+        [executable, "-r", "requirements.lock", "-f", "json", "-o", str(output)],
         check=False,
     )
     try:
         version = subprocess.run(
-            ["pip-audit", "--version"], check=True, capture_output=True, text=True
+            [executable, "--version"], check=True, capture_output=True, text=True
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError) as exc:
         print(f"pip-audit version check failed: {exc}", file=sys.stderr)

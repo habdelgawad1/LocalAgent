@@ -7,6 +7,20 @@ import subprocess
 import sys
 
 
+def _tool(name):
+    names = ["snyk-agent-scan", "mcp-scan"] if name == "mcp-scan" else [name]
+    for candidate_name in names:
+        found = shutil.which(candidate_name)
+        if found:
+            return found
+        candidate = Path(sys.executable).with_name(
+            candidate_name + (".exe" if sys.platform == "win32" else "")
+        )
+        if candidate.exists():
+            return str(candidate)
+    return None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("run_dir", nargs="?", default="logs/_scan", type=Path)
@@ -15,7 +29,8 @@ def main() -> int:
     parser.add_argument("--allow-remote", action="store_true")
     parser.add_argument("--dangerously-run-mcp-servers", action="store_true")
     args = parser.parse_args()
-    if shutil.which("mcp-scan") is None:
+    executable = _tool("mcp-scan")
+    if executable is None:
         print("mcp-scan is not installed or not on PATH", file=sys.stderr)
         return 2
     if args.scan and not args.allow_remote:
@@ -23,7 +38,7 @@ def main() -> int:
     out_dir = args.run_dir / "mcp_scan"
     out_dir.mkdir(parents=True, exist_ok=True)
     output = out_dir / ("scan.json" if args.scan else "inspect.json")
-    command = ["mcp-scan", "scan" if args.scan else "inspect", str(args.config)]
+    command = [executable, "scan" if args.scan else "inspect", str(args.config)]
     if not args.scan:
         command.append("--json")
     else:
@@ -34,7 +49,7 @@ def main() -> int:
         result = subprocess.run(command, stdout=stream, stderr=subprocess.PIPE, text=True, check=False)
     try:
         version = subprocess.run(
-            ["mcp-scan", "--version"], check=True, capture_output=True, text=True
+            [executable, "--help"], check=True, capture_output=True, text=True
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         version = "unknown"
