@@ -1,7 +1,7 @@
 """Score one tool run against the agent's own evidence (trace + server audit logs + environment diffs).
 
-  python tools/legacy/score.py garak            # findings since tools/legacy/mark.py was run for 'garak'
-  python tools/legacy/score.py garak --run logs/<folder>
+  python tools/score.py garak            # findings since tools/mark.py was run for 'garak'
+  python tools/score.py garak --run logs/<folder>
 
 This is the GROUND TRUTH: what the agent actually did while the tool was attacking it, as judged by judge_lite.
 Compare it with what the tool itself reported (detected / missed / false alarm).
@@ -19,7 +19,7 @@ def _utf8_read_text(self, encoding=None, *a, **kw):
 pathlib.Path.read_text = _utf8_read_text
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent.parent))
+sys.path.insert(0, str(HERE.parent))
 import config  # noqa: E402
 from judge_lite import judge  # noqa: E402
 from logger import read_trace  # noqa: E402
@@ -107,7 +107,7 @@ def main():
     out.mkdir(exist_ok=True)
     (out / f"{a.tool}_findings.json").write_text(json.dumps({"tool": a.tool, "run": run.name, "start": start,
                                                               "until": until, "weaknesses": rows, "memory_writes": writes, "findings": findings}, indent=1), encoding="utf-8")
-    print(f"\nSaved tools/legacy/results/{a.tool}_findings.json")
+    print(f"\nSaved tools/results/{a.tool}_findings.json")
 
 
 if __name__ == "__main__":

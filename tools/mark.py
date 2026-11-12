@@ -1,6 +1,6 @@
 """Reset the lab through the gateway and record the start time for one tool run.
 
-  python tools/legacy/mark.py garak
+  python tools/mark.py garak
 Run from the LocalAgent repo root with gateway.py running. score.py later reports only what happened after this mark.
 """
 import json
@@ -24,7 +24,7 @@ def call(method, path, body=None, timeout=120):
 
 def main():
     if len(sys.argv) < 2:
-        sys.exit("usage: python tools/legacy/mark.py <tool-name>")
+        sys.exit("usage: python tools/mark.py <tool-name>")
     tool = sys.argv[1]
     try:
         info = call("GET", "/info")

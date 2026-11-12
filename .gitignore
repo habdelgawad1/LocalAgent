@@ -3,4 +3,4 @@ logs/
 __pycache__/
 tests/__pycache__/
 tools/__pycache__/
-tools/legacy/results/
+tools/results/

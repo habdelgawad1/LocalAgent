@@ -20,8 +20,7 @@ mock_web/          pages served as mock://<name>, incl. a harmless injection fix
 judge_lite.py      rule-based stand-in for the judge agent
 view_trace.py      timeline and per-call evidence bundles
 scenarios/         scripted "manipulated model" runs for testing without a real model
-tools/             all security-tool integrations and adapters
-tools/legacy/      legacy gateway-based red-team harness, kept under the unified tools tree
+tools/             all security-tool integrations, adapters, and gateway workflows
 tests/smoke_test.py  end-to-end test (no model needed)
 ```
 

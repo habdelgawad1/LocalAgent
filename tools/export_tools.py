@@ -1,6 +1,6 @@
 """Export the tool definitions of the agent's three MCP servers for the Cisco MCP Scanner (offline 'static' mode).
 
-  python tools/legacy/export_tools.py       writes tools/legacy/results/agent-tools.json  ({"tools": [...]})
+  python tools/export_tools.py       writes tools/results/agent-tools.json  ({"tools": [...]})
 Run from the LocalAgent repo root. Starts each server over stdio, calls tools/list, and stops it again.
 """
 import asyncio
@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(HERE.parent.parent))
+sys.path.insert(0, str(HERE.parent))
 import config  # noqa: E402
 from mcp import ClientSession, StdioServerParameters  # noqa: E402
 from mcp.client.stdio import stdio_client  # noqa: E402
@@ -41,7 +41,7 @@ async def main():
     out = HERE / "results"
     out.mkdir(exist_ok=True)
     (out / "agent-tools.json").write_text(json.dumps({"tools": tools}, indent=2), encoding="utf-8")   # UTF-8 without BOM
-    print(f"{len(tools)} tools -> tools/legacy/results/agent-tools.json")
+    print(f"{len(tools)} tools -> tools/results/agent-tools.json")
     for t in tools:
         print("  ", t["name"])
 

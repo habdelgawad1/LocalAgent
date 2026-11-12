@@ -1,8 +1,8 @@
 """PyRIT against the LocalAgent gateway. Run from the LocalAgent repo root, gateway.py running, in the PyRIT environment:
 
-  python tools/legacy/mark.py pyrit
-  python tools/legacy/pyrit_agent.py
-  python tools/legacy/score.py pyrit
+  python tools/mark.py pyrit
+  python tools/pyrit_agent.py
+  python tools/score.py pyrit
 
 PromptSendingAttack only delivers prompts and does not decide success on its own, so the ground truth comes from
 score.py (the agent's evidence). The objectives are aimed at what this agent can really be made to do.
