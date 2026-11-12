@@ -43,6 +43,24 @@ python main.py                          # interactive
 llama.cpp instead of Ollama: `llama-server -m model.gguf --jinja -c 8192`, then
 `export LLM_BASE_URL=http://localhost:8080/v1`.
 
+## External tools
+
+The pinned runtime dependencies are recorded in [requirements.lock](requirements.lock); this is the
+file that `pip-audit` audits. Install the optional scanners in a separate virtual environment:
+
+```bash
+python -m venv ~/venvs/tools && source ~/venvs/tools/bin/activate
+pip install pip-audit mcp-scan mcp-authlab cisco-ai-a2a-scanner
+```
+
+Run the integration layer with `python tools/run_all.py logs/<run>`. Results are stored alongside
+the run in `pip_audit/`, `mcp_scan/`, `mcp_authlab/`, and `a2a_scanner/`, with combined findings in
+`findings_tools.json`. LocalAgent's MCP servers are stdio servers, so `mcp-authlab` should target
+its HTTP fixture (`mcp-authlab fixture --profile passthrough`, or another fixture profile such as
+`reference`, `legacy`, `weak-as`, `passthrough`, `sloppy`, `open`, or `mismatch`) rather than
+LocalAgent itself. `mcp-scan scan` uses a remote verification service and is disabled unless
+`--allow-remote` is explicitly supplied; local `inspect` does not send data.
+
 **First thing to check on your machine:** does your Qwen emit well-formed tool calls?
 `python main.py --prompt "list my notes" --echo` and look for `tool_call_requested` and no
 `tool_args_parse_error`. If a model writes calls as text, the client recovers `<tool_call>{...}</tool_call>`
