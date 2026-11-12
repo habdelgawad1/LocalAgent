@@ -6,10 +6,25 @@ import shutil
 import subprocess
 import sys
 
-from adapters import a2a_scanner, mcp_authlab, mcp_scan, pip_audit
+try:
+    from .adapters import a2a_scanner, mcp_authlab, mcp_scan, pip_audit
+except ImportError:
+    from adapters import a2a_scanner, mcp_authlab, mcp_scan, pip_audit
 
 ROOT = Path(__file__).resolve().parent.parent
 TOOLS = Path(__file__).resolve().parent
+
+
+def _export_config(run_dir: Path, config_path: Path) -> bool:
+    result = subprocess.run(
+        [sys.executable, str(TOOLS / "export_mcp_config.py"),
+         "--run-dir", str(run_dir), "--out", str(config_path)],
+        cwd=ROOT, check=False,
+    )
+    if result.returncode != 0:
+        print(f"MCP config: error (exit {result.returncode})")
+        return False
+    return True
 
 
 def _run(label, command, executable, output_paths, adapter):
@@ -39,11 +54,8 @@ def main() -> int:
     run_dir = args.run_dir
     run_dir.mkdir(parents=True, exist_ok=True)
     config_path = run_dir / "mcp_config.json"
-    subprocess.run(
-        [sys.executable, str(TOOLS / "export_mcp_config.py"), "--run-dir", str(run_dir),
-         "--out", str(config_path)],
-        cwd=ROOT, check=True,
-    )
+    if not _export_config(run_dir, config_path):
+        return 1
     rows = []
     findings = []
     status, found = _run(
