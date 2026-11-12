@@ -20,8 +20,8 @@ mock_web/          pages served as mock://<name>, incl. a harmless injection fix
 judge_lite.py      rule-based stand-in for the judge agent
 view_trace.py      timeline and per-call evidence bundles
 scenarios/         scripted "manipulated model" runs for testing without a real model
-tools/             optional external scanner runners, adapters, and their output contract
-agent_tests/       legacy gateway-based red-team harness and tool-specific scripts
+tools/             all security-tool integrations and adapters
+tools/legacy/      legacy gateway-based red-team harness, kept under the unified tools tree
 tests/smoke_test.py  end-to-end test (no model needed)
 ```
 
@@ -56,7 +56,7 @@ pip install pip-audit mcp-scan mcp-authlab cisco-ai-a2a-scanner
 ```
 
 Run the integration layer with `python tools/run_all.py logs/<run>`; see [`tools/README.md`](tools/README.md)
-for the entry-point map. Results are stored alongside
+for the unified entry-point map. Results are stored alongside
 the run in `pip_audit/`, `mcp_scan/`, `mcp_authlab/`, and `a2a_scanner/`, with combined findings in
 `findings_tools.json`. LocalAgent's MCP servers are stdio servers, so `mcp-authlab` should target
 its HTTP fixture (`mcp-authlab fixture --profile passthrough`, or another fixture profile such as
